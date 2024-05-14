@@ -36,8 +36,8 @@ module "rds_instance" {
   instance_class       = "db.t3.micro"
   allocated_storage    = 20
 
-  db_name             = local.name
-  username            = "uname"
+  db_name             = "postgres"
+  username            = "postgres"
   port                = 5432
   skip_final_snapshot = true
 
