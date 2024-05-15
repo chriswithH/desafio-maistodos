@@ -216,6 +216,9 @@ module "ecs_service" {
     my-vol = {}
   }
 
+  cpu = 256
+  memory = 512
+
   # Container definition(s)
   container_definitions = {
     (local.container_name) = {
@@ -260,6 +263,7 @@ module "ecs_service" {
   }
 
   subnet_ids = module.default_aws_networking.private_subnets
+
   security_group_rules = {
     alb_http_ingress = {
       type                     = "ingress"
