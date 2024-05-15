@@ -7,7 +7,7 @@ data "aws_ssm_parameter" "ecs_optimized_ami" {
 ################################################################################
 
 module "ecs_cluster" {
-  source = "terraform-aws-modules/ecs/aws"
+  source = "./modules/cluster"
 
   cluster_name = local.name
 
@@ -183,6 +183,91 @@ module "alb" {
       # Theres nothing to attach here in this definition. Instead,
       # ECS will attach the IPs of the tasks to this target group
       create_attachment = false
+    }
+  }
+
+  tags = local.tags
+}
+
+
+##################################################################
+# ECS SERVICE
+###################################################################
+
+module "ecs_service" {
+  source = "./modules/service"
+
+  # Service
+  name        = local.name
+  cluster_arn = module.ecs_cluster.arn
+
+  # Task Definition
+  requires_compatibilities = ["EC2"]
+  capacity_provider_strategy = {
+    # On-demand instances
+    ondmd = {
+      capacity_provider = module.ecs_cluster.autoscaling_capacity_providers["ondmd"].name
+      weight            = 1
+      base              = 1
+    }
+  }
+
+  volume = {
+    my-vol = {}
+  }
+
+  # Container definition(s)
+  container_definitions = {
+    (local.container_name) = {
+      image = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
+      port_mappings = [
+        {
+          name          = local.container_name
+          containerPort = local.container_port
+          protocol      = "tcp"
+        }
+      ]
+
+      mount_points = [
+        {
+          sourceVolume  = "my-vol",
+          containerPath = "/var/www/my-vol"
+        }
+      ]
+
+      entry_point = ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+
+      # Example image used requires access to write to root filesystem
+      readonly_root_filesystem = false
+
+      enable_cloudwatch_logging              = true
+      create_cloudwatch_log_group            = true
+      cloudwatch_log_group_name              = "/aws/ecs/${local.name}/${local.container_name}"
+      cloudwatch_log_group_retention_in_days = 7
+
+      log_configuration = {
+        logDriver = "awslogs"
+      }
+    }
+  }
+
+  load_balancer = {
+    service = {
+      target_group_arn = module.alb.target_groups["ex_ecs"].arn
+      container_name   = local.container_name
+      container_port   = local.container_port
+    }
+  }
+
+  subnet_ids = module.default_aws_networking.private_subnets
+  security_group_rules = {
+    alb_http_ingress = {
+      type                     = "ingress"
+      from_port                = local.container_port
+      to_port                  = local.container_port
+      protocol                 = "tcp"
+      description              = "Service port"
+      source_security_group_id = module.alb.security_group_id
     }
   }
 
