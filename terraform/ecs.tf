@@ -56,7 +56,7 @@ module "ecs_task_definition" {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest"
+      image     = "590183821071.dkr.ecr.us-east-2.amazonaws.com/django-app:latest"
       port_mappings = [
         {
           name          = local.container_name
@@ -66,31 +66,17 @@ module "ecs_task_definition" {
         }
       ]
 
-      # Example image used requires access to write to root filesystem
       readonly_root_filesystem = false
 
-      # dependencies = [{
-      #   containerName = "fluent-bit"
-      #   condition     = "START"
-      # }]
-
-      enable_cloudwatch_logging = false
-
-      # linux_parameters = {
-      #   capabilities = {
-      #     add = []
-      #     drop = [
-      #       "NET_RAW"
-      #     ]
-      #   }
-      # }
-
-      # Not required for fluent-bit, just an example
-      # volumes_from = [{
-      #   sourceContainer = "fluent-bit"
-      #   readOnly        = false
-      # }]
-
+      enable_cloudwatch_logging = true
+      logConfiguration = {
+        logDriver = "awsLogs"
+        options = {
+          awslogs-group = "ecs/django-app",
+          awslogs-region = "us-east-2",
+          awslogs-stream-prefix = "django-app-log-stream"
+        }
+      }
       memory_reservation = 100
     }
   }
