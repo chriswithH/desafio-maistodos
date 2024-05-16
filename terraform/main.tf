@@ -28,7 +28,7 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   container_name = "django-app"
-  container_port = 80
+  container_port = 8000
 
   tags = {
     Name      = local.name

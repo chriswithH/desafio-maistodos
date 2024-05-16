@@ -72,8 +72,8 @@ module "ecs_task_definition" {
       logConfiguration = {
         logDriver = "awsLogs"
         options = {
-          awslogs-group = "ecs/django-app",
-          awslogs-region = "us-east-2",
+          awslogs-group         = "ecs/django-app",
+          awslogs-region        = "us-east-2",
           awslogs-stream-prefix = "django-app-log-stream"
         }
       }
@@ -103,7 +103,7 @@ module "ecs_task_definition" {
 
   subnet_ids = module.default_aws_networking.private_subnets
   security_group_rules = {
-    alb_ingress_3000 = {
+    alb_ingress_8000 = {
       type                     = "ingress"
       from_port                = local.container_port
       to_port                  = local.container_port
