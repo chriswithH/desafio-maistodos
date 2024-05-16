@@ -61,3 +61,5 @@ docker-compose up
 A aplicação estará acessível em http://localhost:8000.
 
 
+CI/CD
+Este repositório inclui integração e entrega contínuas (CI/CD) para o Terraform usando GitHub Actions. As ações estão configuradas no arquivo .github/workflows/terraform-cicd.yml.
