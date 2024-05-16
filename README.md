@@ -46,19 +46,27 @@ terraform plan
 terraform apply
 ```
 
-## Para desenvolvimento local da aplicação Django:
+## Para atualizar a aplicação Django:
 
 Certifique-se de ter o Docker e Docker compose instalados.
 
 1. Navegue até o diretório da aplicação Django:
 ```bash
-cd django-sem-sql
+cd app
 ```
-2. Execute o seguinte comando para iniciar a aplicação:
+2. Configure suas credenciais da AWS:
+
 ```bash
-docker-compose up
+aws configure
 ```
-A aplicação estará acessível em http://localhost:8000.
+
+3. Faça suas alterações e envie uma nova versão da imagem para o ECR
+```bash
+aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 590183821071.dkr.ecr.us-east-2.amazonaws.com
+docker build -t django-app .    
+docker tag django-app:latest 590183821071.dkr.ecr.us-east-2.amazonaws.com/django-app:latest
+docker push 590183821071.dkr.ecr.us-east-2.amazonaws.com/django-app:latest
+```
 
 
 ## CI/CD
