@@ -34,6 +34,9 @@ jobs:
         with:
           terraform_version: 1.8.0
 
+      - name: Terraform init
+        run: terraform init
+
       - name: Terraform fmt
         run: terraform fmt
 
