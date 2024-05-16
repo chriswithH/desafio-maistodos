@@ -8,11 +8,15 @@ on:
     branches:
       - main
 
+defaults:
+ run:
+  working-directory: ./terraform
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./terraform
+    # env:
+    #   working-directory: ./terraform
 
     steps:
       - name: Checkout code
