@@ -1,4 +1,4 @@
-# data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {}
 
 # module "default_aws_networking" {
 #   source = "terraform-aws-modules/vpc/aws"
